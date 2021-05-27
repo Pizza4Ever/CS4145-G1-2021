@@ -1,5 +1,7 @@
 from flask import Flask, request, send_file
 
+# This flask server is only necessary for hosting the image server.
+
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
@@ -8,15 +10,6 @@ def home():
     # Determine what images to send here:
     image = 'GROENNN.jpg'
     return send_file('static/' + image, mimetype='image/gif')
-
-
-
-
-
-
-
-
-
 
 @app.after_request
 def add_header(response):

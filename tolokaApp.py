@@ -1,5 +1,4 @@
 import toloka.client as toloka
-import toloka.client.project.template_builder as tb
 
 # Create a file named token.txt and place your toloka token on the first line. Do not commit this file.
 f = open("token.txt", "r")
@@ -12,18 +11,21 @@ toloka_client = toloka.TolokaClient(token, 'SANDBOX')
 requester = toloka_client.get_requester()
 print(f'Your account: {requester}')
 
+# # The code below shows how to create a new toloka project using html
 
+# Construct a new project
 new_project = toloka.project.Project(
     assignments_issuing_type=toloka.project.Project.AssignmentsIssuingType.AUTOMATED,
     public_name='What is this image about?',
     public_description='--Public description--',
 )
 
+# This is a toloka JavaScript library, which adds useful integration.
 recording_assets = toloka.project.view_spec.ClassicViewSpec.Assets(
     script_urls=["$TOLOKA_ASSETS/js/toloka-handlebars-templates.js"]
 )
 
-
+# Create the page that a worker will see. We use the older HTML+JS+CSS method since it allows more for control.
 project_interface = toloka.project.view_spec.ClassicViewSpec(
     script=open('./page/test.js').read().strip(),
     markup=open('./page/test.html').read().strip(),
@@ -42,4 +44,5 @@ new_project.task_spec = toloka.project.task_spec.TaskSpec(
     view_spec=project_interface
 )
 
+# Here the toloka client creates the project we constructed above
 new_project = toloka_client.create_project(new_project)
