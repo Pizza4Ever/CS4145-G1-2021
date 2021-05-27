@@ -1,0 +1,21 @@
+.task {
+  display: block;
+}
+
+.image {
+  display: inline-block;
+  width: 50%;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.clearfix {
+  overflow: hidden;
+  width: 100%;
+}
