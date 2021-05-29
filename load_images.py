@@ -1,6 +1,6 @@
 from os import walk
 import sqlite3
-con = sqlite3.connect('example.db')
+con = sqlite3.connect('db.db')
 cur = con.cursor()
 
 _, _, filenames = next(walk("./static"))

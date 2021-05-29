@@ -1,0 +1,11 @@
+Todos for first deadline
+- Make webpage pretty
+- Add description to webpage
+- Add google vision/microsoft lens ai thingies (in db perhaps?)
+- Add readme to explain to first run create_database, then load_images and then tolokaApp. (Only start the pool when also running the app.py, else images won't load)
+- Also did you know you need a second account to answer the questions in the sandbox? https://yandex.com/support/toloka-requester/concepts/sandbox.html (You don't need to use your phone number)
+- Store pool results in the DB
+
+Todos for second question:
+- Make new webpage with interactions, (like playing a game)
+- Add result collection as new table to the database, think of how best to store the results.
