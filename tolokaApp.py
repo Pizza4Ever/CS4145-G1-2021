@@ -49,7 +49,7 @@ def create_project():
 
     # For this task, we have an input image and an output text.
     # (They are labeled: image and result respectively, this is also the HTML reference)
-    input_specification = {'query_image': toloka.project.field_spec.UrlSpec()}
+    input_specification = {'query_image': toloka.project.field_spec.UrlSpec(), 'image_id': toloka.project.field_spec.StringSpec()}
     output_specification = {'result0': toloka.project.field_spec.StringSpec(required=True),
                             'result1': toloka.project.field_spec.StringSpec(required=True),
                             'result2': toloka.project.field_spec.StringSpec(required=True),
@@ -78,7 +78,7 @@ def find_project(name):
 def create_or_update():
     new_project = create_project()
     p = find_project(project_name)
-    if p != False:
+    if p and not p.status == toloka.project.Project.ProjectStatus.ARCHIVED:
         print("Updating the project")
         new_project = toloka_client.update_project(p.id, new_project)
     else:
@@ -150,6 +150,7 @@ def create_tasks(pool):
             tasks.append(toloka.task.Task(
                 input_values={
                     'query_image': URL + key,
+                    'image_id': key
                 },
                 pool_id=pool.id,
             ))
@@ -170,9 +171,11 @@ def create_task_suite(tasks, pool):
 
 # Create or reuse a Toloka project
 project = create_or_update()
+print("Project id:" + project.id)
 
 # Create or reuse a pool from the project
 pool = create_or_get_pool(project)
+print("Pool id:" + pool.id)
 
 # Create the tasks from db entries
 tasks = create_tasks(pool)
@@ -181,11 +184,14 @@ tasks = create_tasks(pool)
 task_suite = create_task_suite(tasks, pool)
 
 # Upload the task suite to the pool)
+# This will create 1 task with 2 questions
 toloka_client.create_task_suite(task_suite)
 
 
-# From here code can be added to manage the pool. We can also decide to manually start the pool
-# TODO: Manage pool
+# This starts the pool.
+toloka_client.open_pool(pool.id)
+
+# TODO: Test this
 
 
 # Function from toloka-kit github, used to wait until the pool is closed
@@ -203,3 +209,5 @@ def wait_pool_for_close(pool, sleep_time=60):
 
 
 wait_pool_for_close(pool)
+
+# TODO: Result retrieval
