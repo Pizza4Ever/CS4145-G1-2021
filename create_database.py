@@ -19,6 +19,13 @@ cur.execute('''CREATE TABLE images
                 image_id INTEGER UNIQUE NOT NULL PRIMARY KEY);
             ''')
 
+
+cur.execute('''CREATE TABLE games
+                (image_id INTEGER,
+                hint TEXT,
+                strength FLOAT,  
+            ''')
+
 con.commit()
 
 con.close()

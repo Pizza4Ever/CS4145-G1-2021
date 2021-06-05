@@ -1,9 +1,19 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, redirect
 
 # This flask server is only necessary for hosting the image server.
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+
+# @app.before_request
+# def before_request():
+#     if request.is_secure:
+#         print("Securee")
+#         url = request.url.replace('https://', 'http://', 1)
+#         code = 301
+#         return redirect(url, code=code)
+
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -21,4 +31,5 @@ def add_header(response):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+    context = ('C:/Certbot/live/123toloka.nl/fullchain.pem', 'C:/Certbot/live/123toloka.nl/privkey.pem')
+    app.run(host="0.0.0.0", ssl_context=context)

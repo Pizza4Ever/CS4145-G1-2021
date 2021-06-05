@@ -5,7 +5,7 @@ import datetime
 import sqlite3
 
 # Manually modify this
-pool_id = 891296
+pool_id = 894310
 
 
 f = open("token.txt", "r")
@@ -42,7 +42,7 @@ def load_in_db(results_list):
             cur.execute('''
                     INSERT INTO hints (hint, strength, image_id) 
                         VALUES ('%s', '%f', (SELECT image_id FROM images WHERE path='%s')) 
-                        ON CONFLICT(hint, image_id) DO UPDATE SET strength=strength+100.0
+                        ON CONFLICT(hint, image_id) DO UPDATE SET strength=strength+1.0
             ''' % (values, 0.0, path))
 
 

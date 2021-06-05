@@ -8,7 +8,7 @@ import sqlite3
 project_name = "What is this image about?"
 pool_name = "My Pool!"
 hints_required = 5
-URL = 'http://31.187.196.117:5000/static/'
+URL = 'https://123toloka.nl:5000/static/'
 ###
 
 
@@ -30,7 +30,7 @@ def create_project():
     # Construct a new project
     new_project = toloka.project.Project(
         assignments_issuing_type=toloka.project.Project.AssignmentsIssuingType.AUTOMATED,
-        public_name='What is this image about?',
+        public_name=project_name,
         public_description='--Public description--', # TODO: Insert good descriptions
     )
 
