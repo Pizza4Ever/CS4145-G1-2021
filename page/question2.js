@@ -12,27 +12,38 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     }.bind(this);
 
     const root = this.getDOMElement();
+    const divs = root.querySelectorAll("div");
+    let hints = [];
+    let hintShowase = [];
+    divs.forEach((h) => {
+        if (h.hasAttribute("hints")) {
+            hints = h.innerHTML.split(",");
+        }
+        if (h.hasAttribute("hintShowcase")) {
+            hintShowase = h;
+        }
+    });
+    console.log(hints);
+    console.log(hintShowase);
 
 
     const input = root.querySelectorAll('input');
     const button = root.querySelector('button');
+
     var order = [];
-    console.log(button);
-    console.log(input);
     function updateValue(e) {
-        console.log(e);
         // this.disabled = true
         this.setAttribute("highlighted", "highlighted")
     }
 
     input.forEach((inp) => {
-        console.log(inp);
         inp.addEventListener('click', updateValue);
     });
 
 
 
-
+    hintShowase.innerHTML = hints[0];
+    let index = 1;
     function buttonEvent(e) {
         var imgs = [];
         input.forEach((item) => {
@@ -44,6 +55,12 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
             }
         });
         order.push(imgs)
+        if (index < hints.length) {
+            hintShowase.innerHTML = hints[index];
+            index += 1;
+        } else {
+            hintShowase.innerHTML = "We are out of hints, please submit the assignment :)"
+        }
     }
 
     button.addEventListener('click', buttonEvent);

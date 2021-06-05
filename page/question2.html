@@ -7,6 +7,14 @@
 </head>
 <body>
 
+<div>
+    Remove each image that does not fit the descriptive hint given below:
+</div>
+
+<div hintShowcase>
+    TESTje
+</div>
+
 <div class="row">
     <div class="column">
         <input type="image" src={{ query_image.[0] }} style="width:19%;" idx=0>
@@ -46,6 +54,7 @@
 </div>
 <button type="button">Click Me!</button>
 
+<div hints hidden>{{ hints }}</div>
 </body>
 
 <script src="question2.js"></script>

@@ -20,11 +20,11 @@ cur.execute('''CREATE TABLE images
             ''')
 
 
-cur.execute('''CREATE TABLE games
-                (image_id INTEGER,
-                hint TEXT,
-                strength FLOAT,  
-            ''')
+# cur.execute('''CREATE TABLE games
+#                 (image_id INTEGER,
+#                 hint TEXT,
+#                 strength FLOAT,
+#             ''')
 
 con.commit()
 

@@ -49,7 +49,9 @@ def create_project():
 
     # For this task, we have an input image and an output text.
     # (They are labeled: image and result respectively, this is also the HTML reference)
-    input_specification = {'query_image': toloka.project.field_spec.ArrayUrlSpec(), 'image_id': toloka.project.field_spec.ArrayStringSpec()}
+    input_specification = {'query_image': toloka.project.field_spec.ArrayUrlSpec(),
+                           'image_id': toloka.project.field_spec.ArrayStringSpec(),
+                           'hints': toloka.project.field_spec.ArrayStringSpec()}
     output_specification = {'result0': toloka.project.field_spec.StringSpec(required=True),
                             'result1': toloka.project.field_spec.StringSpec(required=True),
                             'result2': toloka.project.field_spec.StringSpec(required=True),
@@ -85,6 +87,87 @@ def create_or_update():
         print("Creating a new project")
         new_project = toloka_client.create_project(new_project)
     return new_project
+
+
+# Creates a pool, this pool is where the collection of tasks is gathered
+def create_pool(project):
+    pool = toloka.pool.Pool(
+        project_id=project.id,
+        private_name=pool_name,
+        may_contain_adult_content=True,
+        will_expire=datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+        reward_per_assignment=0.02,
+        auto_accept_solutions=False,
+        auto_accept_period_day=1,
+        assignment_max_duration_seconds=60 * 2,
+        filter=toloka.filter.Languages.in_('EN'),
+        defaults=toloka.pool.Pool.Defaults(default_overlap_for_new_task_suites=1),
+    )
+    pool = toloka_client.create_pool(pool)
+    return pool
+
+
+# This function checks for existing pools with the specified name, if one exists it is reused
+def create_or_get_pool(project):
+    pools = toloka_client.find_pools(project_id=project.id)
+    for p in pools.items:
+        if p.project_id == project.id and p.private_name == pool_name and not p.is_archived():
+            print("Found previous pool")
+            return p
+    print("Creating new pool")
+    return create_pool(project)
+
+
+# Opens a connection with the SQLite db, pulls all images that lack the specified amount of hints
+def fetch_images_from_db():
+    # Pull all images + hints from db
+    con = sqlite3.connect('db.db')
+    cur = con.cursor()
+    # Left join also gives the images with 0 hints.
+    cur.execute('''
+        SELECT a.*, h.* FROM images a
+        LEFT JOIN hints h ON a.image_id = h.image_id
+    ''')
+    fetch = cur.fetchall()
+    print(fetch)
+    storage = dict()
+    for f in fetch:
+        if f[0] not in storage:
+            storage[f[0]] = []
+        if f[2] is not None:  # Making sure the None type is not inserted
+            storage[f[0]].append(f)
+    con.commit()
+    con.close()
+    return storage
+
+
+# Creates the task description based on the items returned from fetch_image_from_db
+def create_tasks(pool):
+    storage = fetch_images_from_db()
+    tasks = []
+    # Key is the img name, value is a list of hints.
+    print(storage)
+    for key, value in storage.items():
+        if len(value) < hints_required:
+            tasks.append(toloka.task.Task(
+                input_values={
+                    'query_image': URL + key,
+                    'image_id': key
+                },
+                pool_id=pool.id,
+            ))
+    return tasks
+
+
+# Encapsulates the tasks in a task suite (Don't know why)
+def create_task_suite(tasks, pool):
+    new_tasks_suite = toloka.task_suite.TaskSuite(
+        pool_id=pool.id,
+        tasks=tasks,
+        overlap=1,
+    )
+    return new_tasks_suite
+
 
 
 # Create or reuse a Toloka project
