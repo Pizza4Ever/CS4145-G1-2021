@@ -5,10 +5,10 @@ import datetime
 import sqlite3
 
 ### Variables one should modify
-project_name = "What is this image about?"
+project_name = "Where are you hiding?"
 pool_name = "My Pool!"
 hints_required = 5
-URL = 'https://123toloka.nl:5000/static/'
+URL = 'https:123toloka.nl:5000/static/'
 ###
 
 
@@ -31,8 +31,60 @@ def create_project():
     new_project = toloka.project.Project(
         assignments_issuing_type=toloka.project.Project.AssignmentsIssuingType.AUTOMATED,
         public_name=project_name,
-        public_description='--Public description--', # TODO: Insert good descriptions
+        # Toloka supports HTML markup
+        public_description="""
+        In this task you are actually playing a game of hide and seek. You are tasked with hiding and will do that in up to 5 different locations. Each location represented by an image and
+        at the moment all locations are classrooms.
+        To help the other player (the seeker) find you, you must provide 3 to 5 contextual hints for each location.
+        Explanation on what a contextual hint is, is given in the assignment.
+        Asking for contextual hints prevents naming objects in the image, which would make the game very easy for the seeker (other player).
+        """
     )
+    new_project.public_instructions ="""
+        <h1>Can you be found?</h1>
+        <p>In this task you are actually playing a game of hide and seek. You are tasked with hiding and will do that in up to 5 different locations, each location represented by an image.
+        At the moment all locations are classrooms. <br>
+        To help the other player (the seeker) find you, you must provide 3 to 5 contextual hints for each location.</p>
+        
+        
+        <h2>Locations: different types of classroom</h2>
+        You will be given 5 locations to hide in. Each location represents a classroom. <br>
+        For each location you hide in, a seeker (another real player in this game) is tasked in finding you. To do that they will be given 25 images of classrooms, including one you are "hiding in".
+        To be able to deduct in which particular classroom you are hiding, they will be given the hints you provide in this task.
+        
+        <h2> Creating hints </h2>
+        The hints that you will provide in this task are so-called "contextual" descriptions. Just stating objects that are present in the image would make the game to easy for the seeker, therefore you
+        are asked to create hints that describe (potential) situations portrayed by the image.<br> Instead of the hint <q>There's a pencil</q>, a more contextual hint would be <q>I can create drawings here</q>.
+        Both hints indicate the presence of a pencil, but only the latter describes a fitting context for that pencil in the given image. <br>
+        For each location you hide in (image) you are asked to provide at least 3 contextual hints. Each hint will be of a different type. As contextual hints can still include objects or other straightforward
+        terms, each image is accompanied with a black list of words you can not use in your hints.<br>
+
+        There are 6 different kinds of contextual hints that could be asked of you. These are explained below.
+
+        <h3>Activity context</h3>
+        <b>Example:</b><i></>
+        
+        <h3>Role context</h3>
+        <b>Example:</b><i></>
+
+        <h3>Temporal context</h3>
+        <b>Example:</b><i></>
+
+        <h3>Relation context</h3>
+        <b>Example:</b><i></>
+
+        <h3>Mood context</h3>
+        <b>Example:</b><i></>
+
+        <h3>Goal context</h3>
+        <b>Example:</b><i></>
+
+
+
+
+
+        <h2>Purpose of this game</h2>
+        """
 
     # This is a toloka JavaScript library, which adds useful integration.
     recording_assets = toloka.project.view_spec.ClassicViewSpec.Assets(
