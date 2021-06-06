@@ -12,20 +12,12 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     }.bind(this);
 
     const root = this.getDOMElement();
-    const divs = root.querySelectorAll("div");
-    let hints = [];
-    let hintShowase = [];
-    divs.forEach((h) => {
-        if (h.hasAttribute("hints")) {
-            hints = h.innerHTML.split(",");
-        }
-        if (h.hasAttribute("hintShowcase")) {
-            hintShowase = h;
-        }
-    });
+    const resultField = root.querySelector("#resultField");
+    let hints = root.querySelector("#hints");
+    let hintShowase = root.querySelector("#hintShowcase");
     console.log(hints);
     console.log(hintShowase);
-
+    console.log(resultField);
 
     const input = root.querySelectorAll('input');
     const button = root.querySelector('button');
@@ -54,7 +46,8 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
                 item.disabled = true
             }
         });
-        order.push(imgs)
+        order.push(imgs);
+        resultField.input = order;
         if (index < hints.length) {
             hintShowase.innerHTML = hints[index];
             index += 1;

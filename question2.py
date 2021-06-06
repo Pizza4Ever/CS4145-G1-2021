@@ -1,3 +1,4 @@
+import random
 import time
 
 import toloka.client as toloka
@@ -7,7 +8,7 @@ import sqlite3
 ### Variables one should modify
 project_name = "Remove the images!"
 pool_name = "My Pool!"
-hints_required = 5
+hints_required = 4
 URL = 'https://123toloka.nl:5000/static/'
 ###
 
@@ -118,7 +119,6 @@ def create_or_get_pool(project):
     return create_pool(project)
 
 
-# Opens a connection with the SQLite db, pulls all images that lack the specified amount of hints
 def fetch_images_from_db():
     # Pull all images + hints from db
     con = sqlite3.connect('db.db')
@@ -135,24 +135,28 @@ def fetch_images_from_db():
         if f[0] not in storage:
             storage[f[0]] = []
         if f[2] is not None:  # Making sure the None type is not inserted
-            storage[f[0]].append(f)
+            storage[f[0]].append(f[2])
     con.commit()
     con.close()
     return storage
 
 
 # Creates the task description based on the items returned from fetch_image_from_db
-def create_tasks(pool):
+def create_game(pool):
     storage = fetch_images_from_db()
     tasks = []
-    # Key is the img name, value is a list of hints.
     print(storage)
     for key, value in storage.items():
-        if len(value) < hints_required:
+        if len(value) > hints_required:
+            # Sample n images, but not the main image
+            sample_list = list(storage)
+            sample_list.remove(key)
+            sample = random.sample(sample_list, 24)
             tasks.append(toloka.task.Task(
                 input_values={
-                    'query_image': URL + key,
-                    'image_id': key
+                    'query_image': list(map(lambda key: URL + key, sample)),
+                    'image_id': sample,
+                    'hints': value
                 },
                 pool_id=pool.id,
             ))
@@ -173,3 +177,5 @@ def create_task_suite(tasks, pool):
 # Create or reuse a Toloka project
 project = create_or_update()
 print("Project id:" + project.id)
+
+create_game(None)
