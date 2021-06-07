@@ -59,16 +59,9 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
         } else {
             hintShowase.innerHTML = "We are out of hints, please submit the assignment :)"
         }
-
         const sol = this.getSolution();
-        console.log(sol);
-        console.log("1");
         let r = {result: order};
-        // let t = JSON.stringify(r);
-        // console.log(t);
         sol.output_values = r;
-        console.log("2");
-        console.log("Validating");
         console.log(this.getSolution());
     }
 
@@ -80,8 +73,6 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     // Task is completed. Global resources can be released (if used)
   },
   validate: function(solution) {
-
-
         return null;
   }
 });
