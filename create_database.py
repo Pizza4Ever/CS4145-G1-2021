@@ -16,7 +16,9 @@ cur.execute('''CREATE TABLE hints
 
 cur.execute('''CREATE TABLE images
                 (path TEXT, 
-                image_id INTEGER UNIQUE NOT NULL PRIMARY KEY);
+                image_id INTEGER UNIQUE NOT NULL PRIMARY KEY,
+                cv_description TEXT,
+                cv_tags TEXT);
             ''')
 
 
