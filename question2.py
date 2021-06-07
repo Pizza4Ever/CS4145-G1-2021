@@ -53,11 +53,7 @@ def create_project():
     input_specification = {'query_image': toloka.project.field_spec.ArrayUrlSpec(),
                            'image_id': toloka.project.field_spec.ArrayStringSpec(),
                            'hints': toloka.project.field_spec.ArrayStringSpec()}
-    output_specification = {'result0': toloka.project.field_spec.StringSpec(required=True),
-                            'result1': toloka.project.field_spec.StringSpec(required=True),
-                            'result2': toloka.project.field_spec.StringSpec(required=True),
-                            'result3': toloka.project.field_spec.StringSpec(required=False),
-                            'result4': toloka.project.field_spec.StringSpec(required=False)}
+    output_specification = {'result': toloka.project.field_spec.JsonSpec(required=True)}
 
     new_project.task_spec = toloka.project.task_spec.TaskSpec(
         input_spec=input_specification,
@@ -72,7 +68,7 @@ def create_project():
 def find_project(name):
     projects = toloka_client.find_projects()
     for p in projects.items:
-        if p.public_name == name:
+        if p.public_name == name and not p.status == toloka.project.Project.ProjectStatus.ARCHIVED:
             return p
     return False
 
@@ -81,7 +77,7 @@ def find_project(name):
 def create_or_update():
     new_project = create_project()
     p = find_project(project_name)
-    if p and not p.status == toloka.project.Project.ProjectStatus.ARCHIVED:
+    if p:
         print("Updating the project")
         new_project = toloka_client.update_project(p.id, new_project)
     else:
@@ -152,6 +148,7 @@ def create_game(pool):
             sample_list = list(storage)
             sample_list.remove(key)
             sample = random.sample(sample_list, 24)
+            sample.append(key)
             tasks.append(toloka.task.Task(
                 input_values={
                     'query_image': list(map(lambda key: URL + key, sample)),
@@ -161,7 +158,6 @@ def create_game(pool):
                 pool_id=pool.id,
             ))
     return tasks
-
 
 # Encapsulates the tasks in a task suite (Don't know why)
 def create_task_suite(tasks, pool):
@@ -173,9 +169,45 @@ def create_task_suite(tasks, pool):
     return new_tasks_suite
 
 
+# # # Main pipeline starts here
 
 # Create or reuse a Toloka project
 project = create_or_update()
 print("Project id:" + project.id)
 
-create_game(None)
+# Create or reuse a pool from the project
+pool = create_or_get_pool(project)
+print("Pool id:" + pool.id)
+
+# Create the tasks from db entries
+tasks = create_game(pool)
+
+# Wrap the tasks in a task suite (Still don't know why)
+task_suite = create_task_suite(tasks, pool)
+
+# Upload the task suite to the pool)
+# This will create 1 task with 2 questions
+toloka_client.create_task_suite(task_suite)
+
+
+# This starts the pool.
+toloka_client.open_pool(pool.id)
+
+# TODO: Test this
+
+
+# Function from toloka-kit github, used to wait until the pool is closed
+def wait_pool_for_close(pool, sleep_time=60):
+    # updating pool info
+    pool = toloka_client.get_pool(pool.id)
+    while not pool.is_closed():
+        print(
+            f'\t{datetime.datetime.now().strftime("%H:%M:%S")}\t'
+            f'Pool {pool.id} has status {pool.status}.'
+        )
+        time.sleep(sleep_time)
+        # updating pool info
+        pool = toloka_client.get_pool(pool.id)
+
+
+wait_pool_for_close(pool)

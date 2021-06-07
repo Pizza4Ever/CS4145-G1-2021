@@ -69,7 +69,7 @@ def create_project():
 def find_project(name):
     projects = toloka_client.find_projects()
     for p in projects.items:
-        if p.public_name == name:
+        if p.public_name == name and not p.status == toloka.project.Project.ProjectStatus.ARCHIVED:
             return p
     return False
 
@@ -78,7 +78,7 @@ def find_project(name):
 def create_or_update():
     new_project = create_project()
     p = find_project(project_name)
-    if p and not p.status == toloka.project.Project.ProjectStatus.ARCHIVED:
+    if p:
         print("Updating the project")
         new_project = toloka_client.update_project(p.id, new_project)
     else:

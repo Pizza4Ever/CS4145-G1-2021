@@ -31,5 +31,5 @@ def add_header(response):
 
 
 if __name__ == "__main__":
-    context = ('C:/Certbot/live/123toloka.nl/fullchain.pem', 'C:/Certbot/live/123toloka.nl/privkey.pem')
+    context = ('fullchain.pem', 'privkey.pem')
     app.run(host="0.0.0.0", ssl_context=context)

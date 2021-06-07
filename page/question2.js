@@ -1,3 +1,5 @@
+let order = [];
+
 exports.Task = extend(TolokaHandlebarsTask, function (options) {
   TolokaHandlebarsTask.call(this, options);
 }, {
@@ -13,7 +15,7 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
 
     const root = this.getDOMElement();
     const resultField = root.querySelector("#resultField");
-    let hints = root.querySelector("#hints");
+    let hints = root.querySelector("#hints").innerHTML.split(',');
     let hintShowase = root.querySelector("#hintShowcase");
     console.log(hints);
     console.log(hintShowase);
@@ -22,7 +24,6 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     const input = root.querySelectorAll('input');
     const button = root.querySelector('button');
 
-    var order = [];
     function updateValue(e) {
         // this.disabled = true
         this.setAttribute("highlighted", "highlighted")
@@ -35,6 +36,7 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
 
 
     hintShowase.innerHTML = hints[0];
+    // let order = [];
     let index = 1;
     function buttonEvent(e) {
         var imgs = [];
@@ -47,21 +49,40 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
             }
         });
         order.push(imgs);
-        resultField.input = order;
+        resultField.value = order;
+        resultField.innerHTML = order.join();
+
+        console.log(resultField);
         if (index < hints.length) {
             hintShowase.innerHTML = hints[index];
             index += 1;
         } else {
             hintShowase.innerHTML = "We are out of hints, please submit the assignment :)"
         }
+
+        const sol = this.getSolution();
+        console.log(sol);
+        console.log("1");
+        let r = {result: order};
+        // let t = JSON.stringify(r);
+        // console.log(t);
+        sol.output_values = r;
+        console.log("2");
+        console.log("Validating");
+        console.log(this.getSolution());
     }
 
-    button.addEventListener('click', buttonEvent);
+    button.addEventListener('click', buttonEvent.bind(this));
 
     console.log("test");
   },
   onDestroy: function() {
     // Task is completed. Global resources can be released (if used)
+  },
+  validate: function(solution) {
+
+
+        return null;
   }
 });
 
