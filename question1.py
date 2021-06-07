@@ -59,31 +59,32 @@ def create_project():
         For each location you hide in (image) you are asked to provide at least 3 contextual hints. Each hint will be of a different type. As contextual hints can still include objects or other straightforward
         terms, each image is accompanied with a black list of words you can not use in your hints.<br>
 
-        There are 6 different kinds of contextual hints that could be asked of you. These are explained below.
+        There are 5 different kinds of contextual hints you can provide. These are explained below.
 
         <h3>Activity context</h3>
-        <b>Example:</b><i></>
-        
+        <b>Examples:</b><i><q>Drawing</q>, <q>I am drawing</q>, <q>I could be drawing</q></i><br>
+        Give an activity you could be doing in the image (given objects that can be seen) or an activity that is being done.
+
         <h3>Role context</h3>
-        <b>Example:</b><i></>
+        <b>Examples:</b><i><q>There is a lecturer</q>, <q>I am a policeman</q></i><br>
+        Give a role people in this image have or could have given the situation that is shown.
 
         <h3>Temporal context</h3>
-        <b>Example:</b><i></>
-
-        <h3>Relation context</h3>
-        <b>Example:</b><i></>
+        <b>Examples:</b><i><q>I'm in an art class</q>, <q>This is a day off</q></i><br>
+        Give a temporary situation that could be described with this image. These are like activities but are dependent on time in some way.
 
         <h3>Mood context</h3>
-        <b>Example:</b><i></>
+        <b>Examples:</b><i><q>I am bored</q>, <q>People are very excited</q></i><br>
+        Describe the mood that is depicted in the image
 
         <h3>Goal context</h3>
-        <b>Example:</b><i></>
-
-
-
-
+        <b>Examples:</b><i><q>I want to join the police</q>, <q>I want to learn how to do math</q></i><br>
+        Describe any goals that could be achieved when being put in the situation given by the image.
 
         <h2>Purpose of this game</h2>
+        The purpose of this game is gaining contextual information from images. Many AI techniques exist for extracting objects or other simple facts from images. Describing the context that is
+        (potentially) present in the image, is however still very hard to do. By playing this game, you are helping in creating and validating a dataset to train AI in retrieving contextual information from
+        images.
         """
 
     # This is a toloka JavaScript library, which adds useful integration.
