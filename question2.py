@@ -52,7 +52,8 @@ def create_project():
     # (They are labeled: image and result respectively, this is also the HTML reference)
     input_specification = {'query_image': toloka.project.field_spec.ArrayUrlSpec(),
                            'image_id': toloka.project.field_spec.ArrayStringSpec(),
-                           'hints': toloka.project.field_spec.ArrayStringSpec()}
+                           'hints': toloka.project.field_spec.ArrayStringSpec(),
+                           'correct_image': toloka.project.field_spec.StringSpec()}
     output_specification = {'result': toloka.project.field_spec.JsonSpec(required=True)}
 
     new_project.task_spec = toloka.project.task_spec.TaskSpec(
@@ -149,11 +150,13 @@ def create_game(pool):
             sample_list.remove(key)
             sample = random.sample(sample_list, 24)
             sample.append(key)
+            random.shuffle(sample)
             tasks.append(toloka.task.Task(
                 input_values={
                     'query_image': list(map(lambda key: URL + key, sample)),
                     'image_id': sample,
-                    'hints': value
+                    'hints': value,
+                    'correct_image': key
                 },
                 pool_id=pool.id,
             ))
