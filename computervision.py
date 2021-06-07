@@ -3,11 +3,7 @@ from azure.cognitiveservices.vision.computervision.models import OperationStatus
 from azure.cognitiveservices.vision.computervision.models import VisualFeatureTypes
 from msrest.authentication import CognitiveServicesCredentials
 
-from array import array
 import os
-from PIL import Image
-import sys
-import time
 
 # Create a Microsoft Computer Vision instance, which can be done for free on a student account.
 # https://azure.microsoft.com/nl-nl/services/cognitive-services/computer-vision/
@@ -33,7 +29,7 @@ def get_image_description(image):
     local_image = open(local_image_path, "rb")
     description_result = computervision_client.describe_image_in_stream(local_image)
     local_image.close
-
+    
     # Get the captions (descriptions) from the response, with confidence level
     print("Description of local image: ")
     # Open local image file
