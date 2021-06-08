@@ -7,7 +7,7 @@ import sqlite3
 import cleanup
 
 # Manually modify this
-pool_id = 894310
+pool_id = 899650
 
 
 f = open("token.txt", "r")
@@ -21,7 +21,7 @@ print(f'Your account: {requester}')
 # Function from toloka-kit github for retrieving results
 results_list = []
 
-for assignment in toloka_client.get_assignments(pool_id=pool_id, status=toloka.assignment.Assignment.SUBMITTED):
+for assignment in toloka_client.get_assignments(pool_id=pool_id, status=toloka.assignment.Assignment.ACCEPTED):
     for task, solution in zip(assignment.tasks, assignment.solutions):
         results_list.append({
             'assignment_id': assignment.id,

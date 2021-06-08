@@ -71,9 +71,6 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
   },
   onDestroy: function() {
     // Task is completed. Global resources can be released (if used)
-  },
-  validate: function(solution) {
-        return null;
   }
 });
 

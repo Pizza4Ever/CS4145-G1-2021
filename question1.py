@@ -8,7 +8,7 @@ import sqlite3
 project_name = "Where are you hiding?"
 pool_name = "My Pool!"
 hints_required = 5
-URL = 'https:123toloka.nl:5000/static/'
+URL = 'https://123toloka.nl:5000/static/'
 ###
 
 
@@ -177,7 +177,7 @@ def fetch_images_from_db():
     # Left join also gives the images with 0 hints.
     cur.execute('''
         SELECT a.*, h.* FROM images a
-        LEFT JOIN hints h ON a.image_id = h.image_id
+        LEFT JOIN hints h ON a.image_id = h.image_id WHERE a.question1 = TRUE
     ''')
     fetch = cur.fetchall()
     print(fetch)
@@ -212,14 +212,22 @@ def create_tasks(pool):
     return tasks
 
 
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
 # Encapsulates the tasks in a task suite (Don't know why)
 def create_task_suite(tasks, pool):
-    new_tasks_suite = toloka.task_suite.TaskSuite(
+    task_partitions = chunks(tasks, 5)
+    task_suite = list(map(lambda x: toloka.task_suite.TaskSuite(
         pool_id=pool.id,
-        tasks=tasks,
+        tasks=x,
         overlap=1,
-    )
-    return new_tasks_suite
+    ), task_partitions))
+
+    return task_suite
 
 
 # # # Main pipeline starts here

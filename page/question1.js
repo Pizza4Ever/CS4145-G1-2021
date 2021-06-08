@@ -1,5 +1,6 @@
 let cv_tags = [];
 let task_id = 0;
+let root = null;
 exports.Task = extend(TolokaHandlebarsTask, function (options) {
   TolokaHandlebarsTask.call(this, options);
 }, {
@@ -12,7 +13,7 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
             return this._getFile.apply(this.file, arguments);
         }.bind(this);
 
-        const root = this.getDOMElement();
+        root = this.getDOMElement();
 
         const task = this.getTask();
 
@@ -30,6 +31,8 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     // Task is completed. Global resources can be released (if used)
   },
   validate: function(solution) {
+      root.querySelectorAll(".footer").forEach(value => value.style.background = "#FFFFFF");
+
       console.log("Validating");
       function check_tags(output_values, index) {
           if (output_values[index]) {
@@ -50,24 +53,26 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
       }
       const output_values = solution.output_values;
       if (check_tags(output_values, "result0")) {
+          root.querySelector("#a").style.background = "#A52A2A";
           return {"task_id": task_id, "errors": {"result0": {"code:": 1, "message": "The first field contains a disallowed word or comma"}}};
       }
       if (check_tags(output_values, "result1")) {
+          root.querySelector("#b").style.background = "#A52A2A";
           return {"task_id": task_id, "errors": {"result1": {"code:": 1, "message": "The second field contains a disallowed word or comma"}}};
       }
       if (check_tags(output_values, "result2")) {
+          root.querySelector("#c").style.background = "#A52A2A";
           return {"task_id": task_id, "errors": {"result2": {"code:": 1, "message": "The third field contains a disallowed word or comma"}}};
       }
       if (check_tags(output_values, "result3")) {
+          root.querySelector("#d").style.background = "#A52A2A";
           return {"task_id": task_id, "errors": {"result3": {"code:": 1, "message": "The fourth field contains a disallowed word or comma"}}};
       }
       if (check_tags(output_values, "result4")) {
+          root.querySelector("#e").style.background = "#A52A2A";
           return {"task_id": task_id, "errors": {"result4": {"code:": 1, "message": "The fifth field contains a disallowed word or comma"}}};
       }
       return null;
-  },
-  onValidationFail: function(errors) {
-      console.log(errors);
   }
 });
 
