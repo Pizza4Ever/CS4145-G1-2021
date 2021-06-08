@@ -168,7 +168,7 @@ def create_pool(project):
         filter=(
                 (toloka.filter.Languages.in_('EN')) &
                 (toloka.filter.Skill(skill.id) is None) &
-                (toloka.filter.ClientType == toloka.filter.ClientType.ClientType.TOLOKA_APP)
+                (toloka.filter.ClientType == toloka.filter.ClientType.ClientType.BROWSER)
         ),
         defaults=toloka.pool.Pool.Defaults(default_overlap_for_new_task_suites=1),
 
