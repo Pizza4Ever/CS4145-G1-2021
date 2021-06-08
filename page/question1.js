@@ -36,6 +36,9 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
               const res = output_values[index].toLowerCase();
               let test = false;
               cv_tags.forEach(cv_tag => {
+                  if (res.includes(",")) {
+                      test = true;
+                  }
                   if (cv_tag.toLowerCase().includes(res)) {
                       console.log("equal?");
                       test = true;
