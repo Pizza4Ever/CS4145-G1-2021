@@ -4,6 +4,8 @@ import toloka.client as toloka
 import datetime
 import sqlite3
 
+import cleanup
+
 # Manually modify this
 pool_id = 894310
 
@@ -38,15 +40,15 @@ def load_in_db(results_list):
         results = r['output_values']
         path = r['input_values']['image_id']
         print(path)
-        for values in results.values():
-            cur.execute('''
-                    INSERT INTO hints (hint, strength, image_id) 
-                        VALUES ('%s', '%f', (SELECT image_id FROM images WHERE path='%s')) 
-                        ON CONFLICT(hint, image_id) DO UPDATE SET strength=strength+1.0
-            ''' % (values, 0.0, path))
-
-
-
+        for value in results.values():
+            original = value
+            strength_value = 0.0
+            spellchecked = cleanup.check_grammer(original.lower())
+            cur.execute(f'''
+                INSERT INTO hints (hint, strength, image_id, hint_orig) 
+                    VALUES ('{spellchecked}', '{strength_value}', (SELECT image_id FROM images WHERE path='{path}'), '{original}') 
+                    ON CONFLICT(hint, image_id) DO UPDATE SET strength=strength+1.0, hint_orig = hint_orig || ',' || '{original}'
+            ''')
 
     con.commit()
     con.close()

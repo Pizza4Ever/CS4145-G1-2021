@@ -34,11 +34,11 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
       function check_tags(output_values, index) {
           if (output_values[index]) {
               const res = output_values[index].toLowerCase();
-              let test = false;
+              let test = false; 
+              if (res.includes(",")) {
+                test = true;
+              }
               cv_tags.forEach(cv_tag => {
-                  if (res.includes(",")) {
-                      test = true;
-                  }
                   if (cv_tag.toLowerCase().includes(res)) {
                       console.log("equal?");
                       test = true;
@@ -50,19 +50,19 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
       }
       const output_values = solution.output_values;
       if (check_tags(output_values, "result0")) {
-          return {"task_id": task_id, "errors": {"result0": {"code:": 1, "message": "The first field contains a disallowed word"}}};
+          return {"task_id": task_id, "errors": {"result0": {"code:": 1, "message": "The first field contains a disallowed word or comma"}}};
       }
       if (check_tags(output_values, "result1")) {
-          return {"task_id": task_id, "errors": {"result1": {"code:": 1, "message": "The second field contains a disallowed word"}}};
+          return {"task_id": task_id, "errors": {"result1": {"code:": 1, "message": "The second field contains a disallowed word or comma"}}};
       }
       if (check_tags(output_values, "result2")) {
-          return {"task_id": task_id, "errors": {"result2": {"code:": 1, "message": "The third field contains a disallowed word"}}};
+          return {"task_id": task_id, "errors": {"result2": {"code:": 1, "message": "The third field contains a disallowed word or comma"}}};
       }
       if (check_tags(output_values, "result3")) {
-          return {"task_id": task_id, "errors": {"result3": {"code:": 1, "message": "The fourth field contains a disallowed word"}}};
+          return {"task_id": task_id, "errors": {"result3": {"code:": 1, "message": "The fourth field contains a disallowed word or comma"}}};
       }
       if (check_tags(output_values, "result4")) {
-          return {"task_id": task_id, "errors": {"result4": {"code:": 1, "message": "The fifth field contains a disallowed word"}}};
+          return {"task_id": task_id, "errors": {"result4": {"code:": 1, "message": "The fifth field contains a disallowed word or comma"}}};
       }
       return null;
   },
