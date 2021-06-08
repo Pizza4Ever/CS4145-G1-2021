@@ -1,6 +1,3 @@
-let cv_tags = [];
-let task_id = 0;
-let root = null;
 exports.Task = extend(TolokaHandlebarsTask, function (options) {
   TolokaHandlebarsTask.call(this, options);
 }, {
@@ -13,7 +10,7 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
             return this._getFile.apply(this.file, arguments);
         }.bind(this);
 
-        root = this.getDOMElement();
+        const root = this.getDOMElement();
 
         const task = this.getTask();
 
@@ -22,8 +19,8 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
         console.log(task);
         console.log(solution);
 
-        cv_tags = task.input_values.cv_tags;
-        task_id = task.id;
+        const cv_tags = task.input_values.cv_tags;
+        const task_id = task.id;
         console.log(cv_tags);
         console.log(task_id);
   },
@@ -31,6 +28,15 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     // Task is completed. Global resources can be released (if used)
   },
   validate: function(solution) {
+      const root = this.getDOMElement();
+      const task = this.getTask();
+      const cv_tags = task.input_values.cv_tags;
+      const task_id = task.id;
+
+      console.log(task);
+      console.log(cv_tags);
+      console.log(task_id);
+
       root.querySelectorAll(".footer").forEach(value => value.style.background = "#FFFFFF");
 
       console.log("Validating");
@@ -42,7 +48,7 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
                 test = true;
               }
               cv_tags.forEach(cv_tag => {
-                  if (cv_tag.toLowerCase().includes(res)) {
+                  if (res.includes(cv_tag.toLowerCase())) {
                       console.log("equal?");
                       test = true;
                   }

@@ -147,15 +147,52 @@ def create_pool(project):
         private_name=pool_name,
         may_contain_adult_content=True,
         will_expire=datetime.datetime.utcnow() + datetime.timedelta(hours=1),
-        reward_per_assignment=0.02,
+        reward_per_assignment=0.05,
         auto_accept_solutions=False,
         auto_accept_period_day=1,
-        assignment_max_duration_seconds=60 * 2,
+        assignment_max_duration_seconds=60 * 4,
         filter=toloka.filter.Languages.in_('EN'),
         defaults=toloka.pool.Pool.Defaults(default_overlap_for_new_task_suites=1),
     )
     pool = toloka_client.create_pool(pool)
     return pool
+
+
+def set_pool_requirements(pool):
+    # The first rule in this project restricts pool access for performers who often make mistakes
+    pool.quality_control.add_action(
+        collector=toloka.collectors.AcceptanceRate(),
+        conditions=[
+            # Performer completed more than 2 tasks
+            toloka.conditions.TotalAssignmentsCount > 2,
+            # And more than 35% of their responses were rejected
+            toloka.conditions.RejectedAssignmentsRate > 35,
+        ],
+        # This action tells Toloka what to do if the condition above is True
+        # In our case, we'll restrict access for 15 days
+        # Always leave a comment: it may be useful later on
+        action=toloka.actions.RestrictionV2(
+            scope=toloka.user_restriction.UserRestriction.ALL_PROJECTS,
+            duration=1,
+            duration_unit='DAYS',
+            private_comment='Performer often make mistakes',  # Only you will see this comment
+        )
+    )
+
+    # The second useful rule is "Fast responses". It allows us to filter out performers who respond too quickly.
+    pool.quality_control.add_action(
+        # Let's monitor fast submissions for the last 5 completed task pages
+        # And define ones that take less than 20 seconds as quick responses.
+        collector=toloka.collectors.AssignmentSubmitTime(history_size=5, fast_submit_threshold_seconds=10),
+        # If we see more than one fast response, we ban the performer from all our projects for 10 days.
+        conditions=[toloka.conditions.FastSubmittedCount > 1],
+        action=toloka.actions.RestrictionV2(
+            scope=toloka.user_restriction.UserRestriction.ALL_PROJECTS,
+            duration=1,
+            duration_unit='DAYS',
+            private_comment='Fast responses',  # Only you will see this comment
+        )
+    )
 
 
 # This function checks for existing pools with the specified name, if one exists it is reused
@@ -220,7 +257,7 @@ def chunks(lst, n):
 
 # Encapsulates the tasks in a task suite (Don't know why)
 def create_task_suite(tasks, pool):
-    task_partitions = chunks(tasks, 5)
+    task_partitions = chunks(tasks, 3)
     task_suite = list(map(lambda x: toloka.task_suite.TaskSuite(
         pool_id=pool.id,
         tasks=x,
@@ -236,23 +273,25 @@ def create_task_suite(tasks, pool):
 project = create_or_update()
 print("Project id:" + project.id)
 
-# # Create or reuse a pool from the project
-# pool = create_or_get_pool(project)
-# print("Pool id:" + pool.id)
-#
-# # Create the tasks from db entries
-# tasks = create_tasks(pool)
-#
-# # Wrap the tasks in a task suite (Still don't know why)
-# task_suite = create_task_suite(tasks, pool)
-#
-# # Upload the task suite to the pool)
-# # This will create 1 task with 2 questions
-# toloka_client.create_task_suite(task_suite)
-#
-#
-# # This starts the pool.
-# toloka_client.open_pool(pool.id)
+# Create or reuse a pool from the project
+pool = create_or_get_pool(project)
+print("Pool id:" + pool.id)
+
+set_pool_requirements(pool)
+
+# Create the tasks from db entries
+tasks = create_tasks(pool)
+
+# Wrap the tasks in a task suite (Still don't know why)
+task_suite = create_task_suite(tasks, pool)
+
+# Upload the task suite to the pool)
+# This will create 1 task with 2 questions
+toloka_client.create_task_suite(task_suite)
+
+
+# This starts the pool.
+toloka_client.open_pool(pool.id)
 
 # TODO: Test this
 
