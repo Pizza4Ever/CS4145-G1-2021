@@ -167,7 +167,7 @@ def create_pool(project):
         assignment_max_duration_seconds=60 * 4,
         filter=(
                 (toloka.filter.Languages.in_('EN')) &
-                (toloka.filter.Skill(skill.id) is None) &
+                (toloka.filter.Skill(skill.id) == None) &
                 (toloka.filter.ClientType == toloka.filter.ClientType.ClientType.BROWSER)
         ),
         defaults=toloka.pool.Pool.Defaults(default_overlap_for_new_task_suites=1),
