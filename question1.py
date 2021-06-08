@@ -17,7 +17,6 @@ f = open("token.txt", "r")
 token = f.read()
 f.close()
 
-
 toloka_client = toloka.TolokaClient(token, 'SANDBOX')
 
 # This is just to test if your token is correct (If it fails, request a new toloka Oauth token)
@@ -40,7 +39,7 @@ def create_project():
         Asking for contextual hints prevents naming objects in the image, which would make the game very easy for the seeker (other player).
         """
     )
-    new_project.public_instructions ="""
+    new_project.public_instructions = """
         <h1>Can you be found?</h1>
         <p>In this task you are actually playing a game of hide and seek. You are tasked with hiding and will do that in up to 5 different locations, each location represented by an image.
         At the moment all locations are classrooms. <br>
@@ -102,7 +101,9 @@ def create_project():
 
     # For this task, we have an input image and an output text.
     # (They are labeled: image and result respectively, this is also the HTML reference)
-    input_specification = {'query_image': toloka.project.field_spec.UrlSpec(), 'image_id': toloka.project.field_spec.StringSpec(), 'cv_tags': toloka.project.field_spec.ArrayStringSpec()}
+    input_specification = {'query_image': toloka.project.field_spec.UrlSpec(),
+                           'image_id': toloka.project.field_spec.StringSpec(),
+                           'cv_tags': toloka.project.field_spec.ArrayStringSpec()}
     output_specification = {'result0': toloka.project.field_spec.StringSpec(required=True),
                             'result1': toloka.project.field_spec.StringSpec(required=True),
                             'result2': toloka.project.field_spec.StringSpec(required=True),
@@ -142,6 +143,19 @@ def create_or_update():
 
 # Creates a pool, this pool is where the collection of tasks is gathered
 def create_pool(project):
+    # Create the skill used for repeats
+    skill_name = 'Hero!'
+    skill = next(toloka_client.get_skills(name=skill_name), None)
+    if skill:
+        print('Skill already exists')
+    else:
+        print('Creating new skill')
+        skill = toloka_client.create_skill(
+            name=skill_name,
+            hidden=True,
+            public_requester_description={'EN': 'The performer labeled an image'},
+        )
+
     pool = toloka.pool.Pool(
         project_id=project.id,
         private_name=pool_name,
@@ -151,9 +165,24 @@ def create_pool(project):
         auto_accept_solutions=False,
         auto_accept_period_day=1,
         assignment_max_duration_seconds=60 * 4,
-        filter=toloka.filter.Languages.in_('EN'),
+        filter=(
+                (toloka.filter.Languages.in_('EN')) &
+                (toloka.filter.Skill(skill.id) is None) &
+                (toloka.filter.ClientType == toloka.filter.ClientType.ClientType.TOLOKA_APP)
+        ),
         defaults=toloka.pool.Pool.Defaults(default_overlap_for_new_task_suites=1),
+
     )
+
+    # Automatically updating skills
+    pool.quality_control.add_action(
+        collector=toloka.collectors.AnswerCount(),
+        # If the performer completed at least one task,
+        conditions=[toloka.conditions.AssignmentsAcceptedCount > 0],
+        # It doesn't add to the skill, it sets the new skill to 1
+        action=toloka.actions.SetSkill(skill_id=skill.id, skill_value=1),
+    )
+
     pool = toloka_client.create_pool(pool)
     return pool
 
@@ -289,9 +318,9 @@ task_suite = create_task_suite(tasks, pool)
 # This will create 1 task with 2 questions
 toloka_client.create_task_suite(task_suite)
 
-
 # This starts the pool.
 toloka_client.open_pool(pool.id)
+
 
 # TODO: Test this
 
