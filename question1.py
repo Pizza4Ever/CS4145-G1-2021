@@ -160,7 +160,7 @@ def create_pool(project):
         project_id=project.id,
         private_name=pool_name,
         may_contain_adult_content=True,
-        will_expire=datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+        will_expire=datetime.datetime.utcnow() + datetime.timedelta(hours=2),
         reward_per_assignment=0.05,
         auto_accept_solutions=False,
         auto_accept_period_day=1,
@@ -299,7 +299,7 @@ def create_task_suite(tasks, pool):
     task_suite = list(map(lambda x: toloka.task_suite.TaskSuite(
         pool_id=pool.id,
         tasks=x,
-        overlap=3,
+        overlap=1,
     ), task_partitions))
 
     return task_suite
