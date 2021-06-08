@@ -1,0 +1,2 @@
+project_id,pool_id,pilot,overlap,task_duration,reward,amount_of_workers
+123456,123456,true,true,4:00,0.10,0
