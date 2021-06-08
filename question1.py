@@ -57,7 +57,7 @@ def create_project():
         are asked to create hints that describe (potential) situations portrayed by the image.<br> Instead of the hint <q>There's a pencil</q>, a more contextual hint would be <q>I can create drawings here</q>.
         Both hints indicate the presence of a pencil, but only the latter describes a fitting context for that pencil in the given image. <br>
         For each location you hide in (image) you are asked to provide at least 3 contextual hints. Each hint will be of a different type. As contextual hints can still include objects or other straightforward
-        terms, each image is accompanied with a black list of words you can not use in your hints.<br>
+        terms, each image is accompanied with a <b>black list of words you can not use in your hints</b>.<br>
 
         There are 5 different kinds of contextual hints you can provide. These are explained below.
 
