@@ -11,6 +11,7 @@ def check_grammer(text):
     print(matches)
     corrected = language_tool_python.utils.correct(text, matches)
     print(corrected)
+    return corrected
 
 if __name__ == "__main__":
     check_grammer("drwing")
