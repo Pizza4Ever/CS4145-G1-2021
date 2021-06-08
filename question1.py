@@ -174,6 +174,13 @@ def create_pool(project):
 
     )
 
+    set_pool_requirements(pool, skill)
+
+    pool = toloka_client.create_pool(pool)
+    return pool
+
+
+def set_pool_requirements(pool, skill):
     # Automatically updating skills
     pool.quality_control.add_action(
         collector=toloka.collectors.AnswerCount(),
@@ -183,11 +190,6 @@ def create_pool(project):
         action=toloka.actions.SetSkill(skill_id=skill.id, skill_value=1),
     )
 
-    pool = toloka_client.create_pool(pool)
-    return pool
-
-
-def set_pool_requirements(pool):
     # The first rule in this project restricts pool access for performers who often make mistakes
     pool.quality_control.add_action(
         collector=toloka.collectors.AcceptanceRate(),
@@ -305,8 +307,6 @@ print("Project id:" + project.id)
 # Create or reuse a pool from the project
 pool = create_or_get_pool(project)
 print("Pool id:" + pool.id)
-
-set_pool_requirements(pool)
 
 # Create the tasks from db entries
 tasks = create_tasks(pool)
