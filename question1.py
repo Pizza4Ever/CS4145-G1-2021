@@ -102,7 +102,7 @@ def create_project():
 
     # For this task, we have an input image and an output text.
     # (They are labeled: image and result respectively, this is also the HTML reference)
-    input_specification = {'query_image': toloka.project.field_spec.UrlSpec(), 'image_id': toloka.project.field_spec.StringSpec()}
+    input_specification = {'query_image': toloka.project.field_spec.UrlSpec(), 'image_id': toloka.project.field_spec.StringSpec(), 'cv_tags': toloka.project.field_spec.ArrayStringSpec()}
     output_specification = {'result0': toloka.project.field_spec.StringSpec(required=True),
                             'result1': toloka.project.field_spec.StringSpec(required=True),
                             'result2': toloka.project.field_spec.StringSpec(required=True),
@@ -200,10 +200,12 @@ def create_tasks(pool):
     print(storage)
     for key, value in storage.items():
         if len(value) < hints_required:
+            cv_tags = value[0][3].split(",")
             tasks.append(toloka.task.Task(
                 input_values={
                     'query_image': URL + key,
-                    'image_id': key
+                    'image_id': key,
+                    'cv_tags': cv_tags
                 },
                 pool_id=pool.id,
             ))
@@ -226,23 +228,23 @@ def create_task_suite(tasks, pool):
 project = create_or_update()
 print("Project id:" + project.id)
 
-# Create or reuse a pool from the project
-pool = create_or_get_pool(project)
-print("Pool id:" + pool.id)
-
-# Create the tasks from db entries
-tasks = create_tasks(pool)
-
-# Wrap the tasks in a task suite (Still don't know why)
-task_suite = create_task_suite(tasks, pool)
-
-# Upload the task suite to the pool)
-# This will create 1 task with 2 questions
-toloka_client.create_task_suite(task_suite)
-
-
-# This starts the pool.
-toloka_client.open_pool(pool.id)
+# # Create or reuse a pool from the project
+# pool = create_or_get_pool(project)
+# print("Pool id:" + pool.id)
+#
+# # Create the tasks from db entries
+# tasks = create_tasks(pool)
+#
+# # Wrap the tasks in a task suite (Still don't know why)
+# task_suite = create_task_suite(tasks, pool)
+#
+# # Upload the task suite to the pool)
+# # This will create 1 task with 2 questions
+# toloka_client.create_task_suite(task_suite)
+#
+#
+# # This starts the pool.
+# toloka_client.open_pool(pool.id)
 
 # TODO: Test this
 
