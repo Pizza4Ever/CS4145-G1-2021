@@ -227,10 +227,10 @@ def set_pool_requirements(pool, skill):
 
     # The following increases overlap for the task if the assignment was rejected to ensure the task is done by another worker
     pool.quality_control.add_action(
-    collector=toloka.collectors.AssignmentsAssessment(),
-    conditions=[toloka.conditions.AssessmentEvent == toloka.conditions.AssessmentEvent.REJECT],
-    action=toloka.actions.ChangeOverlap(delta=1, open_pool=False)
-)
+        collector=toloka.collectors.AssignmentsAssessment(),
+        conditions=[toloka.conditions.AssessmentEvent == toloka.conditions.AssessmentEvent.REJECT],
+        action=toloka.actions.ChangeOverlap(delta=1, open_pool=False)
+    )
 
 
 # This function checks for existing pools with the specified name, if one exists it is reused
@@ -299,7 +299,7 @@ def create_task_suite(tasks, pool):
     task_suite = list(map(lambda x: toloka.task_suite.TaskSuite(
         pool_id=pool.id,
         tasks=x,
-        overlap=1,
+        overlap=3,
     ), task_partitions))
 
     return task_suite
