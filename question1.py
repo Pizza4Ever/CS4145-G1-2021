@@ -161,7 +161,7 @@ def create_pool(project):
         private_name=pool_name,
         may_contain_adult_content=True,
         will_expire=datetime.datetime.utcnow() + datetime.timedelta(hours=2),
-        reward_per_assignment=0.05,
+        reward_per_assignment=0.10,
         auto_accept_solutions=False,
         auto_accept_period_day=1,
         assignment_max_duration_seconds=60 * 4,
