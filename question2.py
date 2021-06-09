@@ -89,20 +89,95 @@ def create_or_update():
 
 # Creates a pool, this pool is where the collection of tasks is gathered
 def create_pool(project):
+    # Create the skill used for repeats
+    skill_name = 'Beaut!'
+    skill = next(toloka_client.get_skills(name=skill_name), None)
+    if skill:
+        print('Skill already exists')
+    else:
+        print('Creating new skill')
+        skill = toloka_client.create_skill(
+            name=skill_name,
+            hidden=True,
+            public_requester_description={'EN': 'The performer played our game'},
+        )
+
     pool = toloka.pool.Pool(
         project_id=project.id,
         private_name=pool_name,
         may_contain_adult_content=True,
-        will_expire=datetime.datetime.utcnow() + datetime.timedelta(hours=1),
-        reward_per_assignment=0.02,
+        will_expire=datetime.datetime.utcnow() + datetime.timedelta(hours=2),
+        reward_per_assignment=0.15,
         auto_accept_solutions=False,
         auto_accept_period_day=1,
-        assignment_max_duration_seconds=60 * 2,
-        filter=toloka.filter.Languages.in_('EN'),
+        assignment_max_duration_seconds=60 * 10,
+        filter=(
+                (toloka.filter.Languages.in_('EN')) &
+                (toloka.filter.Skill(skill.id) == None) &
+                (toloka.filter.ClientType == toloka.filter.ClientType.ClientType.BROWSER)
+        ),
         defaults=toloka.pool.Pool.Defaults(default_overlap_for_new_task_suites=1),
+
     )
+
+    set_pool_requirements(pool, skill)
+
     pool = toloka_client.create_pool(pool)
     return pool
+
+
+def set_pool_requirements(pool, skill):
+    # Automatically updating skills
+    pool.quality_control.add_action(
+        collector=toloka.collectors.AnswerCount(),
+        # If the performer completed at least one task,
+        conditions=[toloka.conditions.AssignmentsAcceptedCount > 0],
+        # It doesn't add to the skill, it sets the new skill to 1
+        action=toloka.actions.SetSkill(skill_id=skill.id, skill_value=1),
+    )
+
+    # The first rule in this project restricts pool access for performers who often make mistakes
+    pool.quality_control.add_action(
+        collector=toloka.collectors.AcceptanceRate(),
+        conditions=[
+            # Performer completed more than 2 tasks
+            toloka.conditions.TotalAssignmentsCount > 2,
+            # And more than 35% of their responses were rejected
+            toloka.conditions.RejectedAssignmentsRate > 35,
+        ],
+        # This action tells Toloka what to do if the condition above is True
+        # In our case, we'll restrict access for 15 days
+        # Always leave a comment: it may be useful later on
+        action=toloka.actions.RestrictionV2(
+            scope=toloka.user_restriction.UserRestriction.ALL_PROJECTS,
+            duration=1,
+            duration_unit='DAYS',
+            private_comment='Performer often make mistakes',  # Only you will see this comment
+        )
+    )
+
+    # The second useful rule is "Fast responses". It allows us to filter out performers who respond too quickly.
+    pool.quality_control.add_action(
+        # Let's monitor fast submissions for the last 5 completed task pages
+        # And define ones that take less than 20 seconds as quick responses.
+        collector=toloka.collectors.AssignmentSubmitTime(history_size=5, fast_submit_threshold_seconds=10),
+        # If we see more than one fast response, we ban the performer from all our projects for 10 days.
+        conditions=[toloka.conditions.FastSubmittedCount > 1],
+        action=toloka.actions.RestrictionV2(
+            scope=toloka.user_restriction.UserRestriction.ALL_PROJECTS,
+            duration=1,
+            duration_unit='DAYS',
+            private_comment='Fast responses',  # Only you will see this comment
+        )
+    )
+
+    # The following increases overlap for the task if the assignment was rejected to ensure the task is done by another worker
+    pool.quality_control.add_action(
+        collector=toloka.collectors.AssignmentsAssessment(),
+        conditions=[toloka.conditions.AssessmentEvent == toloka.conditions.AssessmentEvent.REJECT],
+        action=toloka.actions.ChangeOverlap(delta=1, open_pool=False)
+    )
+
 
 
 # This function checks for existing pools with the specified name, if one exists it is reused
@@ -161,6 +236,7 @@ def create_game(pool):
                 pool_id=pool.id,
             ))
     return tasks
+
 
 # Encapsulates the tasks in a task suite (Don't know why)
 def create_task_suite(tasks, pool):

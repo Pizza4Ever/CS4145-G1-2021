@@ -17,7 +17,7 @@ f = open("token.txt", "r")
 token = f.read()
 f.close()
 
-toloka_client = toloka.TolokaClient(token, 'SANDBOX')
+toloka_client = toloka.TolokaClient(token, 'PRODUCTION')
 
 # This is just to test if your token is correct (If it fails, request a new toloka Oauth token)
 requester = toloka_client.get_requester()
@@ -161,10 +161,10 @@ def create_pool(project):
         private_name=pool_name,
         may_contain_adult_content=True,
         will_expire=datetime.datetime.utcnow() + datetime.timedelta(hours=2),
-        reward_per_assignment=0.10,
+        reward_per_assignment=0.15,
         auto_accept_solutions=False,
         auto_accept_period_day=1,
-        assignment_max_duration_seconds=60 * 4,
+        assignment_max_duration_seconds=60 * 10,
         filter=(
                 (toloka.filter.Languages.in_('EN')) &
                 (toloka.filter.Skill(skill.id) == None) &
