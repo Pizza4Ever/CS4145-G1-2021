@@ -38,11 +38,11 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
 
 
 
-    hintShowase.innerHTML = hints[0];
+    hintShowase.innerHTML = "<br> <b>Hint: </b>" + hints[0];
     // let order = [];
     let index = 1;
     this.highlight_count = 0;
-    this.button_count = 24;
+    this.button_count = 23;
     function buttonEvent(e) {
         var imgs = [];
         input.forEach((item) => {
@@ -60,7 +60,7 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
 
         console.log(resultField);
         if (index < hints.length) {
-            hintShowase.innerHTML = hints[index];
+            hintShowase.innerHTML = "<br> <b>Hint: </b>" + hints[index];
             index += 1;
         } else {
             this.out_of_hints = true;
