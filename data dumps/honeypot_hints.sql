@@ -10,7 +10,7 @@ INSERT INTO hints VALUES ('Sitting on the floor', 1.0, 58,'honeypot');
 INSERT INTO hints VALUES ('Working in groups', 1.0, 60,'honeypot');
 INSERT INTO hints VALUES ('Smiling towards camera', 1.0, 62,'honeypot');
 INSERT INTO hints VALUES ('Paper crafts', 1.0, 69,'honeypot');
-INSERT INTO hints VALUES ('Black and white', 1.0, 70,'honeypot');
+INSERT INTO hints VALUES ('Looking towards the camera', 1.0, 70,'honeypot');
 INSERT INTO hints VALUES ('Posing for picture', 1.0, 74,'honeypot');
 INSERT INTO hints VALUES ('Finger painting', 1.0, 75,'honeypot');
 INSERT INTO hints VALUES ('Empty room', 1.0, 81,'honeypot');
