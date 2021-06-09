@@ -32,8 +32,30 @@ def create_project():
     new_project = toloka.project.Project(
         assignments_issuing_type=toloka.project.Project.AssignmentsIssuingType.AUTOMATED,
         public_name=project_name,
-        public_description='--Public description--', # TODO: Insert good descriptions
+        public_description='Game: Can you find me?', # TODO: Insert good descriptions
     )
+
+    new_project.public_instructions = """
+        <h1>Can you find them?</h1>
+        <p>In this task you are actually playing a game of hide and seek. You are tasked with finding the other person who is hiding in a certain classroom. To help you find the hider, they have provided
+        you with atleast 3 hints. Can you find them?
+        
+        
+        <h2>Flow of the game</h2>
+        You are presented with 24 images that each represent a classroom. At the top left a hint by the hider is given. Any image/classroom that can not be described with this hint you can click to hide.
+        Once you have hidden all the images that are not applicable for the given hint, you can click on "Next hint" to recieve the next hint from the hider.
+        You repeat these steps untill all hints are given and only one image is left.
+
+        <i>If there are no more hints and you are left with more than one revealed image, try to guess where the hider could be. </i>
+
+        <b>NOTE: You are not able to submit if there are still hints left or more than 1 image is still revealed. </b> 
+
+        <h2>Purpose of this game</h2>
+        The purpose of this game is gaining contextual information from images. Many AI techniques exist for extracting objects or other simple facts from images. Describing the context that is
+        (potentially) present in the image, is however still very hard to do. By playing this game, you are helping in creating and validating a dataset to train AI in retrieving contextual information from
+        images.
+        """
+
 
     # This is a toloka JavaScript library, which adds useful integration.
     recording_assets = toloka.project.view_spec.ClassicViewSpec.Assets(
