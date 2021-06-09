@@ -204,10 +204,10 @@ def fetch_images_from_db():
     print(fetch)
     storage = dict()
     for f in fetch:
-        if f[0] not in storage:
+        if f[0] not in storage and f[4] == 1:
             storage[f[0]] = []
-        if f[2] is not None:  # Making sure the None type is not inserted
-            storage[f[0]].append(f[2])
+        if f[2] is not None and f[4] == 1:  # Making sure the None type is not inserted
+            storage[f[0]].append(f[3])
     con.commit()
     con.close()
     return storage
