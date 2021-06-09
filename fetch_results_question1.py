@@ -43,7 +43,7 @@ def load_in_db(results_list):
         for value in results.values():
             original = value
             if original is not None:
-                strength_value = 0.0
+                strength_value = 1.0
                 spellchecked = cleanup.check_grammer(original.lower())
                 original = original.replace("'", "''")
                 spellchecked = spellchecked.replace("'", "''")
