@@ -223,7 +223,7 @@ def create_game(pool):
             # Sample n images, but not the main image
             sample_list = list(storage)
             sample_list.remove(key)
-            sample = random.sample(sample_list, 24)
+            sample = random.sample(sample_list, 23)
             sample.append(key)
             random.shuffle(sample)
             tasks.append(toloka.task.Task(
