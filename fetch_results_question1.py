@@ -7,13 +7,13 @@ import sqlite3
 import cleanup
 
 # Manually modify this
-pool_id = 899650
+pool_id = 24817112
 
 
 f = open("token.txt", "r")
 token = f.read()
 f.close()
-toloka_client = toloka.TolokaClient(token, 'SANDBOX')
+toloka_client = toloka.TolokaClient(token, 'PRODUCTION')
 requester = toloka_client.get_requester()
 print(f'Your account: {requester}')
 
@@ -42,13 +42,16 @@ def load_in_db(results_list):
         print(path)
         for value in results.values():
             original = value
-            strength_value = 0.0
-            spellchecked = cleanup.check_grammer(original.lower())
-            cur.execute(f'''
-                INSERT INTO hints (hint, strength, image_id, hint_orig) 
-                    VALUES ('{spellchecked}', '{strength_value}', (SELECT image_id FROM images WHERE path='{path}'), '{original}') 
-                    ON CONFLICT(hint, image_id) DO UPDATE SET strength=strength+1.0, hint_orig = hint_orig || ',' || '{original}'
-            ''')
+            if original is not None:
+                strength_value = 0.0
+                spellchecked = cleanup.check_grammer(original.lower())
+                original = original.replace("'", "''")
+                spellchecked = spellchecked.replace("'", "''")
+                cur.execute(f'''
+                    INSERT INTO hints (hint, strength, image_id, hint_orig) 
+                        VALUES ('{spellchecked}', '{strength_value}', (SELECT image_id FROM images WHERE path='{path}'), '{original}') 
+                        ON CONFLICT(hint, image_id) DO UPDATE SET strength=strength+1.0, hint_orig = hint_orig || ',' || '{original}'
+                ''')
 
     con.commit()
     con.close()

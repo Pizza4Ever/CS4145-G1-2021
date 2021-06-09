@@ -8,7 +8,7 @@ import sqlite3
 ### Variables one should modify
 project_name = "Remove the images!"
 pool_name = "My Pool!"
-hints_required = 4
+hints_required = 1
 URL = 'https://123toloka.nl:5000/static/'
 ###
 
@@ -206,8 +206,8 @@ def fetch_images_from_db():
     for f in fetch:
         if f[0] not in storage:
             storage[f[0]] = []
-        if f[2] is not None and f[4] == 1:  # Making sure the None type is not inserted
-            storage[f[0]].append(f[3])
+        if f[5] is not None and f[4] == 1:  # Making sure the None type is not inserted
+            storage[f[0]].append(f[5])
     con.commit()
     con.close()
     return storage
@@ -238,13 +238,21 @@ def create_game(pool):
     return tasks
 
 
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+
 # Encapsulates the tasks in a task suite (Don't know why)
 def create_task_suite(tasks, pool):
-    new_tasks_suite = toloka.task_suite.TaskSuite(
+    task_partitions = chunks(tasks, 1)
+    new_tasks_suite = list(map(lambda x: toloka.task_suite.TaskSuite(
         pool_id=pool.id,
-        tasks=tasks,
+        tasks=x,
         overlap=1,
-    )
+    ), task_partitions))
     return new_tasks_suite
 
 

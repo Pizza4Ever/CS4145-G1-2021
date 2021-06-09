@@ -1,4 +1,3 @@
-let order = [];
 
 exports.Task = extend(TolokaHandlebarsTask, function (options) {
   TolokaHandlebarsTask.call(this, options);
@@ -25,19 +24,25 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     const button = root.querySelector('button');
 
     function updateValue(e) {
-        // this.disabled = true
-        this.setAttribute("highlighted", "highlighted")
+        if (this.hasAttribute("highlighted")) {
+            this.removeAttribute("highlighted")
+        } else {
+            this.setAttribute("highlighted", "highlighted")
+        }
     }
 
     input.forEach((inp) => {
         inp.addEventListener('click', updateValue);
     });
+    let order = [];
 
 
 
     hintShowase.innerHTML = hints[0];
     // let order = [];
     let index = 1;
+    this.highlight_count = 0;
+    this.button_count = 24;
     function buttonEvent(e) {
         var imgs = [];
         input.forEach((item) => {
@@ -45,7 +50,8 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
                 item.removeAttribute("highlighted");
                 item.setAttribute("selected", "selected");
                 imgs.push(item.getAttribute("idx"));
-                item.disabled = true
+                item.disabled = true;
+                this.highlight_count += 1;
             }
         });
         order.push(imgs);
@@ -57,6 +63,7 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
             hintShowase.innerHTML = hints[index];
             index += 1;
         } else {
+            this.out_of_hints = true;
             hintShowase.innerHTML = "We are out of hints, please submit the assignment :)"
         }
         const sol = this.getSolution();
@@ -71,6 +78,15 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
   },
   onDestroy: function() {
     // Task is completed. Global resources can be released (if used)
+  },
+  validate: function() {
+        if (this.out_of_hints || this.highlight_count >= this.button_count) {
+
+        } else {
+            const task = this.getTask();
+            const task_id = task.id;
+            return {"task_id": task_id, "errors": {"result": {"code:": 1, "message": "Please finish the game"}}};
+        }
   }
 });
 
