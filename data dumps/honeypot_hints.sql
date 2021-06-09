@@ -1,7 +1,7 @@
 INSERT INTO hints VALUES ('Sitting on the floor', 1.0, 3,'honeypot');
 INSERT INTO hints VALUES ('Listening', 1.0, 12,'honeypot');
 INSERT INTO hints VALUES ('There is a blackboard', 1.0, 30,'honeypot');
-INSERT INTO hints VALUES ('Watching a movie', 1.0, 32,'honeypot');
+INSERT INTO hints VALUES ('Sitting behind desks', 1.0, 32,'honeypot');
 INSERT INTO hints VALUES ('Hand painting', 1.0, 40,'honeypot');
 INSERT INTO hints VALUES ('Listening', 1.0, 41,'honeypot');
 INSERT INTO hints VALUES ('Empty room', 1.0, 45,'honeypot');
