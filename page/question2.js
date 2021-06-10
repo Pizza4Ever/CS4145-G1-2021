@@ -14,8 +14,11 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     const root = this.getDOMElement();
     const resultField = root.querySelector("#resultField");
     let hints = root.querySelector("#hints").innerHTML.split(',');
+    let honeypot_hint = root.querySelector('#honeypot').innerHTML;
     let hintShowase = root.querySelector("#hintShowcase");
     this.messagediv = root.querySelector("#messages");
+    this.order = [];
+    
 
     console.log(hints);
     console.log(hintShowase);
@@ -35,7 +38,6 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     this.input.forEach((inp) => {
         inp.addEventListener('click', updateValue);
     });
-    let order = [];
 
 
 
@@ -44,6 +46,8 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     this.index = 1;
     this.highlight_count = 0;
     this.button_count = 23;
+    this.honeypot_index = 3
+    this.honeypot_asked = false
 
     function buttonEvent(e) {
       var imgs = [];
@@ -72,23 +76,28 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
         item.disabled = true;
         this.highlight_count += 1;
       });
-      order.push(imgs);
-        resultField.value = order;
-        resultField.innerHTML = order.join();
+      this.order.push(imgs);
+      resultField.value = this.order;
+      resultField.innerHTML = this.order.join();
 
-        console.log(resultField);
-        if (this.index < hints.length) {
-            hintShowase.innerHTML = "<br> <b>Hint: </b>" + hints[this.index];
-            this.index += 1 ;
-            console.log(this.index)
+      console.log(resultField);
+      if (this.index < hints.length) {
+        if(this.index == 3 && !this.honeypot_asked) {
+          hintShowase.innerHTML = "<br> <b>Hint: </b>" + honeypot_hint;
         } else {
-            this.out_of_hints = true;
-            hintShowase.innerHTML = "We are out of hints, please submit the assignment :)"
+          hintShowase.innerHTML = "<br> <b>Hint: </b>" + hints[this.index];
+          this.index += 1 ;
+          console.log(this.index)
         }
         const sol = this.getSolution();
-        let r = {result: order};
+        let r = {result: this.order};
         sol.output_values = r;
         console.log(this.getSolution());
+      } else {
+          this.out_of_hints = true;
+          hintShowase.innerHTML = "We are out of hints, please submit the assignment :)"
+      }
+
     }
 
     button.addEventListener('click', buttonEvent.bind(this));
@@ -147,6 +156,13 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     this.highlight_count += 1;
     console.log(this.highlight_count)
   });
+
+  this.order.push(imgs);
+
+  const sol = this.getSolution();
+  let r = {result: this.order};
+  sol.output_values = r;
+  console.log(this.getSolution());
     if (this.highlight_count == this.button_count && (this.out_of_hints || this.index > 3)) {
           console.log("Submission is alright")
 
