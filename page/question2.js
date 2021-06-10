@@ -46,18 +46,33 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     this.button_count = 23;
 
     function buttonEvent(e) {
-        var imgs = [];
+      var imgs = [];
+      let highlighted = []
+
+      // Check if the right amount of images have been selected
+      this.input.forEach((item) => {
+        if (item.hasAttribute("highlighted")) {
+          highlighted.push(item);
+        }
+      });
       
-        this.input.forEach((item) => {
-            if (item.hasAttribute("highlighted")) {
-                item.removeAttribute("highlighted");
-                item.setAttribute("selected", "selected");
-                imgs.push(item.getAttribute("idx"));
-                item.disabled = true;
-                this.highlight_count += 1;
-            }
-        });
-        order.push(imgs);
+      if (highlighted.length + this.highlight_count > this.button_count) {
+        this.messagediv.innerHTML = "You can not select all images, please leave atleast one"
+        const task = this.getTask();
+        const task_id = task.id;
+        return
+      } else {
+        this.messagediv.innerHTML = ""
+      }
+
+      highlighted.forEach((item) => {
+        item.removeAttribute("highlighted");
+        item.setAttribute("selected", "selected");
+        imgs.push(item.getAttribute("idx"));
+        item.disabled = true;
+        this.highlight_count += 1;
+      });
+      order.push(imgs);
         resultField.value = order;
         resultField.innerHTML = order.join();
 
@@ -89,7 +104,7 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
 
     // Check if at least 3 hints have been seen
     if(this.index < 3){
-      this.messagediv.innerHTML = "Please use atleast 3 hints"
+      this.messagediv.innerHTML = "Please use atleast 4 hints"
       const task = this.getTask();
       const task_id = task.id;
       return {"task_id": task_id, "errors": {"result": {"code:": 1, "message": "Please use atleast 3 hints"}}};
@@ -106,13 +121,13 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
       }
     });
 
-  if (highlighted.length > this.button_count) {
+  if (highlighted.length + this.highlight_count > this.button_count) {
       this.messagediv.innerHTML = "You can not select all images, please leave atleast one"
       const task = this.getTask();
       const task_id = task.id;
       return {"task_id": task_id, "errors": {"result": {"code:": 1, "message": "Please do not select all images"}}};
     }
-  else if(highlight_count.length < this.button_count) {
+  else if(this.highlight_count + highlighted.length < this.button_count) {
     this.messagediv.innerHTML = "Only one image should remain, use another hint or guess"
       const task = this.getTask();
       const task_id = task.id;
