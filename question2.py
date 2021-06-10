@@ -78,6 +78,7 @@ def create_project():
     input_specification = {'query_image': toloka.project.field_spec.ArrayUrlSpec(),
                            'image_id': toloka.project.field_spec.ArrayStringSpec(),
                            'hints': toloka.project.field_spec.ArrayStringSpec(),
+                           'honeypot': toloka.project.field_spec.StringSpec(),
                            'correct_image': toloka.project.field_spec.StringSpec()}
     output_specification = {'result': toloka.project.field_spec.JsonSpec(required=True)}
 
@@ -229,10 +230,14 @@ def fetch_images_from_db():
     print(fetch)
     storage = dict()
     for f in fetch:
+        # 0=a.path 1=a.image_id 2=a.cv_description 3=a.cv_tags 4=a.question1 5=h.hint 6=h.strength 7=h.image_id 8=h.hint_orig
         if f[0] not in storage:
-            storage[f[0]] = []
+            storage[f[0]] = {"hints":[]}
+        if f[8] == "honeypot":
+            storage[f[0]]["honeypot"] = f[5]
+            continue
         if f[5] is not None and f[4] == 1:  # Making sure the None type is not inserted
-            storage[f[0]].append(f[5])
+            storage[f[0]]["hints"].append(f[5])
     con.commit()
     con.close()
     return storage
@@ -244,7 +249,7 @@ def create_game(pool):
     tasks = []
     print(storage)
     for key, value in storage.items():
-        if len(value) >= hints_required:
+        if len(value["hints"]) + 1 >= hints_required:
             # Sample n images, but not the main image
             sample_list = list(storage)
             sample_list.remove(key)
@@ -255,7 +260,8 @@ def create_game(pool):
                 input_values={
                     'query_image': list(map(lambda key: URL + key, sample)),
                     'image_id': sample,
-                    'hints': value,
+                    'hints': value["hints"],
+                    'honeypot': value["honeypot"],
                     'correct_image': key
                 },
                 pool_id=pool.id,

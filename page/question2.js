@@ -22,6 +22,7 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
 
     console.log(hints);
     console.log(hintShowase);
+    console.log(honeypot_hint)
     console.log(resultField);
 
     this.input = root.querySelectorAll('input');
@@ -71,8 +72,9 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
 
       console.log(resultField);
       if (this.index < hints.length) {
-        if(this.index == 3 && !this.honeypot_asked) {
+        if(this.index == this.honeypot_index && !this.honeypot_asked) {
           hintShowase.innerHTML = "<br> <b>Hint: </b>" + honeypot_hint;
+          this.honeypot_asked = true;
         } else {
           hintShowase.innerHTML = "<br> <b>Hint: </b>" + hints[this.index];
           this.index += 1 ;
