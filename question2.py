@@ -8,7 +8,7 @@ import sqlite3
 ### Variables one should modify
 project_name = "Remove the images!"
 pool_name = "My Pool!"
-hints_required = 1
+hints_required = 4
 URL = 'https://123toloka.nl:5000/static/'
 ###
 
@@ -37,18 +37,21 @@ def create_project():
 
     new_project.public_instructions = """
         <h1>Can you find them?</h1>
-        <p>In this task you are actually playing a game of hide and seek. You are tasked with finding the other person who is hiding in a certain classroom. To help you find the hider, they have provided
-        you with atleast 3 hints. Can you find them?
+        <p>In this task you are actually playing a game of hide and seek. You are tasked with finding the other person who is hiding in a certain classroom. To help you find them, they have provided
+        you with atleast 3 <i>contextual</i> hints. These hints not only hold objects you can see in the images, but also activities that
+        might take place or a description of the atmosphere. Can you find them?
         
         
         <h2>Flow of the game</h2>
         You are presented with 24 images that each represent a classroom. At the top left a hint by the hider is given. Any image/classroom that can not be described with this hint you can click to hide.
-        Once you have hidden all the images that are not applicable for the given hint, you can click on "Next hint" to recieve the next hint from the hider.
-        You repeat these steps untill all hints are given and only one image is left.
+        Once you have selected all the images that are not applicable for the given hint, you can click on "Next hint" to recieve the next hint from the hider. Subsequently the previously selected images
+        will be blacked out. <br>
+        You repeat these steps untill only one image is left. <br><br>
 
-        <i>If there are no more hints and you are left with more than one revealed image, try to guess where the hider could be. </i>
+        <b>Important notes</b>:<br>
+        If there are no more hints and you are left with more than one revealed image, try to guess where the hider could be to have one image remaining.<br>
 
-        <b>NOTE: You are not able to submit if there are still hints left or more than 1 image is still revealed. </b> 
+        You are <b>not able to submit</b> if you used less than 4 hints or more than 1 image is still revealed. </b> 
 
         <h2>Purpose of this game</h2>
         The purpose of this game is gaining contextual information from images. Many AI techniques exist for extracting objects or other simple facts from images. Describing the context that is
@@ -241,7 +244,7 @@ def create_game(pool):
     tasks = []
     print(storage)
     for key, value in storage.items():
-        if len(value) > hints_required:
+        if len(value) >= hints_required:
             # Sample n images, but not the main image
             sample_list = list(storage)
             sample_list.remove(key)

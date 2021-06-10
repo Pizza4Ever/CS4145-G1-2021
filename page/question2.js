@@ -132,7 +132,7 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
     this.highlight_count += 1;
     console.log(this.highlight_count)
   });
-    if (this.highlight_count == this.button_count && (this.out_of_hints || this.index >= 3)) {
+    if (this.highlight_count == this.button_count && (this.out_of_hints || this.index > 3)) {
           console.log("Submission is alright")
 
 
