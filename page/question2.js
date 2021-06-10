@@ -69,17 +69,6 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
         this.messagediv.innerHTML = ""
       }
 
-      highlighted.forEach((item) => {
-        item.removeAttribute("highlighted");
-        item.setAttribute("selected", "selected");
-        imgs.push(item.getAttribute("idx"));
-        item.disabled = true;
-        this.highlight_count += 1;
-      });
-      this.order.push(imgs);
-      resultField.value = this.order;
-      resultField.innerHTML = this.order.join();
-
       console.log(resultField);
       if (this.index < hints.length) {
         if(this.index == 3 && !this.honeypot_asked) {
@@ -89,6 +78,16 @@ exports.Task = extend(TolokaHandlebarsTask, function (options) {
           this.index += 1 ;
           console.log(this.index)
         }
+        highlighted.forEach((item) => {
+          item.removeAttribute("highlighted");
+          item.setAttribute("selected", "selected");
+          imgs.push(item.getAttribute("idx"));
+          item.disabled = true;
+          this.highlight_count += 1;
+        });
+        this.order.push(imgs);
+        resultField.value = this.order;
+        resultField.innerHTML = this.order.join();
         const sol = this.getSolution();
         let r = {result: this.order};
         sol.output_values = r;
