@@ -15,6 +15,9 @@
     TESTje
 </div>
 
+<div id="messages">
+</div>
+
 <div class="row">
     <div class="column">
         <input type="image" src={{ query_image.[0] }} style="width:10%;" idx=0>
@@ -53,7 +56,7 @@
 <button type="button">Next hint!</button>
 
 <div id="hints" hints hidden>{{ hints }}</div>
-<!-- <textarea id="resultField" class="textarea__textarea" name="result" placeholder="testing"></textarea> -->
+<textarea id="resultField" class="textarea__textarea" name="result" placeholder="testing" readonly></textarea>
 </body>
 
 <script src="question2.js"></script>
