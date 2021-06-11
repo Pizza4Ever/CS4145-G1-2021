@@ -6,7 +6,7 @@ import datetime
 import sqlite3
 
 ### Variables one should modify
-project_name = "Remove the images!"
+project_name = "Find the correct image!"
 pool_name = "My Pool!"
 hints_required = 4
 URL = 'https://123toloka.nl:5000/static/'
@@ -19,7 +19,7 @@ token = f.read()
 f.close()
 
 
-toloka_client = toloka.TolokaClient(token, 'SANDBOX')
+toloka_client = toloka.TolokaClient(token, 'PRODUCTION')
 
 # This is just to test if your token is correct (If it fails, request a new toloka Oauth token)
 requester = toloka_client.get_requester()
@@ -44,7 +44,7 @@ def create_project():
         
         <h2>Flow of the game</h2>
         You are presented with 24 images that each represent a classroom. At the top left a hint by the hider is given. Any image/classroom that can not be described with this hint you can click to hide.
-        Once you have selected all the images that are not applicable for the given hint, you can click on "Next hint" to recieve the next hint from the hider. Subsequently the previously selected images
+        Once you have selected all the images that are <b>not applicable for the given hint</b>, you can click on "Next hint" to recieve the next hint from the hider. Subsequently the previously selected images
         will be blacked out. <br>
         You repeat these steps untill only one image is left. <br><br>
 
@@ -133,7 +133,7 @@ def create_pool(project):
         private_name=pool_name,
         may_contain_adult_content=True,
         will_expire=datetime.datetime.utcnow() + datetime.timedelta(hours=2),
-        reward_per_assignment=0.15,
+        reward_per_assignment=0.20,
         auto_accept_solutions=False,
         auto_accept_period_day=1,
         assignment_max_duration_seconds=60 * 10,
