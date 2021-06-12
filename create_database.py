@@ -17,7 +17,8 @@ cur.execute('''CREATE TABLE hints
                 strength FLOAT,
                 image_id INTEGER,
                 hint_orig TEXT,
-                PRIMARY KEY (hint, image_id),
+                hint_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                CONSTRAINT unique_hints UNIQUE (hint, image_id),
                 FOREIGN KEY(image_id) REFERENCES images(image_id));
             ''')
 
