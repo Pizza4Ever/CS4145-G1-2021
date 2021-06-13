@@ -31,13 +31,13 @@ class Question_2_Submission:
 
 
     def get_image_id_query(self):
-        return f"SELECT image_id FROM images WHERE path='{self.correct_image}'"
+        return f"""SELECT image_id FROM images WHERE path="{self.correct_image}" """
 
 
     def get_queries_hints_ids(self, hints):
         queries = []
         for hint in hints:
-            queries.append(f"SELECT hint_id FROM hints WHERE image_id={self.correct_image_id} AND hint='{hint}'")
+            queries.append(f"""SELECT hint_id FROM hints WHERE image_id={self.correct_image_id} AND hint="{hint}" """)
         
         return queries
 
