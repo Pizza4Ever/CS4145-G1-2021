@@ -67,8 +67,20 @@ cur.execute('''CREATE TABLE seeker_games
                 eliminated_r13 TEXT,
                 hint_r14 INTEGER,
                 eliminated_r14 TEXT
-                )
+                );
             ''')
+
+cur.execute('''CREATE TABLE images_context (
+                image_id INTEGER ,
+                hint_id INTEGER,
+                eliminated INTEGER,
+                pos_context INTEGER,
+                honeypot BOOLEAN DEFAULT FALSE,
+                FOREIGN KEY (image_id) REFERENCES images(image_id),
+                FOREIGN KEY (hint_id) REFERENCES hints(hint_id),
+                PRIMARY KEY (image_id, hint_id)
+                );
+            ''')    
 
 con.commit()
 

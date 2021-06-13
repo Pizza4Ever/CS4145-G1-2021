@@ -120,4 +120,5 @@ if __name__=="__main__":
 
     print("Storing results in db")
     load_in_db(results_list)
+    con.close()
 
