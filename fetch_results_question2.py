@@ -21,6 +21,15 @@ def load_in_db(results_list):
     for r in results_list:
         image_found_val = 1 if r.image_found else 0
         invalid_game_val = 1 if r.invalid else 0
+
+        cur.execute(f'''
+            SELECT hint_id FROM hints where image_id = {r.correct_image_id} AND hint_orig = 'honeypot'
+        ''')
+
+        honeypot_id = cur.fetchone()[0]
+        
+        # TODO: this should've been done earlier
+        r.insert_honeypot_hint_id(honeypot_id)
         
         rounds_cols = 'hint_r1, eliminated_r1'
         first_round_imgs = ','.join([str (j) for j in r.rounds[0]])
@@ -49,7 +58,7 @@ def load_in_db(results_list):
 if __name__=="__main__":
     
     # Manually modify this
-    pool_id = 24912393
+    pool_id = 24890934
 
 
     f = open("token.txt", "r")

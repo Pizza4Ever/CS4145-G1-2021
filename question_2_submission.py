@@ -29,6 +29,9 @@ class Question_2_Submission:
         return self.invalid
 
 
+    def insert_honeypot_hint_id(self, honeypot_id):
+        self.hints_ids[3:3] = [honeypot_id]
+
 
     def get_image_id_query(self):
         return f"""SELECT image_id FROM images WHERE path="{self.correct_image}" """
